@@ -1,5 +1,5 @@
 import { Button } from "../components/Button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sun, Moon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const navLinks = [
@@ -11,6 +11,36 @@ const navLinks = [
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isLight, setIsLight] = useState(() => {
+    if (typeof window !== "undefined") {
+      const savedTheme = localStorage.getItem("theme");
+      return savedTheme === "light";
+    }
+    return false;
+  });
+
+  // Theme Sync Logic
+  useEffect(() => {
+    if (isLight) {
+      document.documentElement.classList.add("light");
+      localStorage.setItem("theme", "light");
+    } else {
+      document.documentElement.classList.remove("light");
+      localStorage.setItem("theme", "dark");
+    }
+  }, [isLight]);
+
+  const toggleTheme = () => {
+    if (isLight) {
+      document.documentElement.classList.remove("light");
+      localStorage.setItem("theme", "dark");
+      setIsLight(false);
+    } else {
+      document.documentElement.classList.add("light");
+      localStorage.setItem("theme", "light");
+      setIsLight(true);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -46,7 +76,9 @@ export const Navbar = () => {
         {/* Desktop Nav - Absolute Center */}
         <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 items-center">
           <div
-            className={`${isScrolled ? "" : "glass"} rounded-full px-2 py-1 flex items-center gap-1 border border-white/5`}
+            className={`${
+              isScrolled ? "" : "glass"
+            } rounded-full px-2 py-1 flex items-center gap-1 border border-white/5`}
           >
             {navLinks.map((link, index) => (
               <a
@@ -60,8 +92,20 @@ export const Navbar = () => {
           </div>
         </div>
 
-        {/* Desktop CTA - Right */}
-        <div className="hidden md:flex flex-1 lg:flex-none justify-end">
+        {/* Desktop CTA & Theme Toggle - Right */}
+        <div className="hidden md:flex flex-1 lg:flex-none justify-end items-center gap-4">
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-full hover:bg-primary/10 transition-colors border border-transparent hover:border-primary/20"
+            aria-label="Toggle Theme"
+          >
+            {isLight ? (
+              <Moon size={20} className="text-primary" />
+            ) : (
+              <Sun size={20} className="text-primary" />
+            )}
+          </button>
+
           <a href="#contact">
             <Button size="sm" className="rounded-full px-6">
               Contact
@@ -69,14 +113,24 @@ export const Navbar = () => {
           </a>
         </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          className="md:hidden p-2 text-foreground rounded-xl glass border border-white/10"
-          onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-          aria-label="Toggle Menu"
-        >
-          {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
+        {/* Mobile Actions */}
+        <div className="flex md:hidden items-center gap-2">
+          <button
+            onClick={toggleTheme}
+            className="p-2 text-foreground rounded-xl glass border border-white/10"
+            aria-label="Toggle Theme"
+          >
+            {isLight ? <Moon size={20} /> : <Sun size={20} />}
+          </button>
+
+          <button
+            className="p-2 text-foreground rounded-xl glass border border-white/10"
+            onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+            aria-label="Toggle Menu"
+          >
+            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
       </nav>
 
       {/* Mobile Menu Overlay */}
@@ -87,7 +141,7 @@ export const Navbar = () => {
         >
           <div
             className="mx-6 glass-strong rounded-3xl p-8 border border-white/10 shadow-2xl flex flex-col gap-6"
-            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="flex flex-col gap-4">
               {navLinks.map((link, index) => (
