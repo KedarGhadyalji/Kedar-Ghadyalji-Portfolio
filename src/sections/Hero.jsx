@@ -138,7 +138,7 @@ export const Hero = () => {
                 </span>{" "}
                 — a software engineer specializing in building intelligent
                 full-stack applications. I turn complex problems into seamless,
-                high-performance digital solutions.
+                high-performing digital solutions.
               </p>
             </div>
 
