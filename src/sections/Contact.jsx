@@ -5,23 +5,15 @@ import {
   MapPin,
   Send,
   CheckCircle,
-  AlertCircle,
   Copy,
+  ShieldCheck,
 } from "lucide-react";
 import { Button } from "../components/Button";
 import { useState } from "react";
 
 const contactInfo = [
-  {
-    icon: Mail,
-    label: "Email",
-    value: "kedarghadyalji@gmail.com",
-  },
-  {
-    icon: Phone,
-    label: "Phone",
-    value: "+91 95948 08335",
-  },
+  { icon: Mail, label: "Email", value: "kedarghadyalji@gmail.com" },
+  { icon: Phone, label: "Phone", value: "+91 95948 08335" },
   { icon: MapPin, label: "Location", value: "Mumbai, India" },
 ];
 
@@ -36,47 +28,102 @@ export const Contact = () => {
   const [copiedValue, setCopiedValue] = useState(null);
 
   const handleCopy = (value) => {
-    if (value === "Mumbai, India") return; // Don't copy location
-
+    if (value === "Mumbai, India") return;
     navigator.clipboard.writeText(value);
     setCopiedValue(value);
-
-    // Reset "Copied" state after 2 seconds
     setTimeout(() => setCopiedValue(null), 2000);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    const DISCORD_WEBHOOK_URL = import.meta.env.VITE_DISCORD_WEBHOOK_URL;
 
-    const payload = {
-      embeds: [
-        {
-          title: "🚀 New Portfolio Message",
-          color: 0x7dd3fc,
-          fields: [
-            { name: "Sender", value: formData.name, inline: true },
-            { name: "Email", value: formData.email, inline: true },
-            { name: "Message", value: formData.message },
-          ],
-          footer: { text: `Sent at ${new Date().toLocaleString()}` },
-        },
-      ],
-    };
+    const now = Date.now();
+    const lastSent = Number(localStorage.getItem("kg_last_sent") || 0);
+    const dailyData = JSON.parse(
+      localStorage.getItem("kg_daily_stats") || '{"count": 0, "resetAt": 0}',
+    );
+    const lockoutUntil = Number(localStorage.getItem("kg_lockout") || 0);
+
+    // 1. Check for 12-hour Security Lockout
+    if (now < lockoutUntil) {
+      const hoursLeft = Math.ceil((lockoutUntil - now) / (1000 * 60 * 60));
+      setSubmitStatus({
+        type: "security",
+        message: `Security Protocol Active: Access limited for ${hoursLeft}h due to high activity. This defensive logic reflects my skills in cybersecurity and proactive threat mitigation.`,
+      });
+      return;
+    }
+
+    // 2. Check for 60-second Cooldown
+    if (now - lastSent < 60000) {
+      const secondsLeft = Math.ceil((60000 - (now - lastSent)) / 1000);
+      setSubmitStatus({
+        type: "security",
+        message: `Rate Limit Active: Please wait ${secondsLeft}s before next transmission. (Anti-spam measure enabled).`,
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    setSubmitStatus({ type: null, message: "" });
 
     try {
-      const response = await fetch(DISCORD_WEBHOOK_URL, {
+      const response = await fetch(import.meta.env.VITE_DISCORD_WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          embeds: [
+            {
+              title: "🚀 New Portfolio Message",
+              color: 0x7dd3fc,
+              fields: [
+                { name: "Sender", value: formData.name, inline: true },
+                { name: "Email", value: formData.email, inline: true },
+                { name: "Message", value: formData.message },
+              ],
+              footer: { text: `Sent at ${new Date().toLocaleString()}` },
+            },
+          ],
+        }),
       });
 
       if (response.ok) {
-        setSubmitStatus({
-          type: "success",
-          message: "Message delivered directly to my terminal!",
-        });
+        localStorage.setItem("kg_last_sent", now.toString());
+
+        let newCount = dailyData.count + 1;
+        let resetTime = dailyData.resetAt;
+
+        // Reset daily count if 24h passed
+        if (now > dailyData.resetAt) {
+          newCount = 1;
+          resetTime = now + 24 * 60 * 60 * 1000;
+        }
+
+        if (newCount >= 5) {
+          // Trigger 12-hour lockout
+          localStorage.setItem(
+            "kg_lockout",
+            (now + 12 * 60 * 60 * 1000).toString(),
+          );
+          setSubmitStatus({
+            type: "security",
+            message:
+              "Final daily message sent. Access limited for 12h for security verification. This automated defensive response demonstrates my commitment to secure engineering.",
+          });
+        } else {
+          localStorage.setItem(
+            "kg_daily_stats",
+            JSON.stringify({
+              count: newCount,
+              resetAt: resetTime || now + 24 * 60 * 60 * 1000,
+            }),
+          );
+          setSubmitStatus({
+            type: "success",
+            message:
+              "Transmission successful! Message delivered directly to my terminal.",
+          });
+        }
         setFormData({ name: "", email: "", message: "" });
       } else {
         throw new Error();
@@ -84,7 +131,7 @@ export const Contact = () => {
     } catch (err) {
       setSubmitStatus({
         type: "error",
-        message: "Network glitch! Please try reaching out via LinkedIn.",
+        message: "Network glitch! Reach out via LinkedIn.",
       });
     } finally {
       setIsLoading(false);
@@ -110,7 +157,6 @@ export const Contact = () => {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
-          {/* Contact Form */}
           <div className="glass p-8 rounded-3xl border border-border shadow-xl shadow-primary/5">
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="space-y-2">
@@ -175,10 +221,28 @@ export const Contact = () => {
                   </>
                 )}
               </Button>
+
+              {submitStatus.type && (
+                <div
+                  className={`flex items-start gap-3 p-5 rounded-2xl animate-fade-in ${
+                    submitStatus.type === "success"
+                      ? "bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20"
+                      : "bg-primary/10 text-primary border border-primary/20"
+                  }`}
+                >
+                  {submitStatus.type === "success" ? (
+                    <CheckCircle className="w-5 h-5 shrink-0 mt-0.5" />
+                  ) : (
+                    <ShieldCheck className="w-5 h-5 shrink-0 mt-0.5" />
+                  )}
+                  <p className="text-sm font-bold leading-relaxed">
+                    {submitStatus.message}
+                  </p>
+                </div>
+              )}
             </form>
           </div>
 
-          {/* Contact Info Sidebar - Click to Copy */}
           <div className="space-y-6">
             <div className="glass rounded-3xl p-8 border border-border">
               <h3 className="text-xl font-bold mb-8 tracking-tight text-foreground">
@@ -202,8 +266,6 @@ export const Contact = () => {
                         {item.value}
                       </div>
                     </div>
-
-                    {/* Copy Feedback Tooltip */}
                     {item.label !== "Location" && (
                       <div className="opacity-0 group-hover:opacity-100 transition-opacity">
                         {copiedValue === item.value ? (
@@ -229,7 +291,7 @@ export const Contact = () => {
               </div>
               <p className="text-muted-foreground text-sm leading-relaxed">
                 I am currently evaluating new opportunities. If you're looking
-                for someone to bridge the gap between code and logic, let’s
+                for someone to bridge the gap between code and logic, let's
                 connect.
               </p>
             </div>
