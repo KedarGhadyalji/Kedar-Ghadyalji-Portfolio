@@ -11,8 +11,8 @@ Follow these steps to get the project running locally:
 
 ### 1. Clone the repository
 
-git clone https://github.com/KedarGhadyalji/Kedar-Dev-Portfolio.git
-cd Kedar-Dev-Portfolio
+git clone https://github.com/KedarGhadyalji/Kedar-Ghadyalji-Portfolio.git
+cd Kedar-Ghadyalji-Portfolio
 
 ### 2. Install dependencies
 
