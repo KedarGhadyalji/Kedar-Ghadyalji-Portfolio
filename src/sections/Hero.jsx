@@ -43,7 +43,7 @@ const socialLinks = [
 ];
 
 export const Hero = () => {
-  const STATIC_COMMIT_COUNT = 400;
+  const STATIC_COMMIT_COUNT = 450;
   const [displayedCount, setDisplayedCount] = useState(0);
   const [isLightTheme, setIsLightTheme] = useState(false);
 
