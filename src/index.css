@@ -1,239 +1,590 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=VT323&display=swap');
 
-@theme {
-  --color-background: #0f172a;
-  --color-foreground: #f1f5f9;
-  --color-card: #131c31;
-  --color-primary: #7dd3fc;
-  --color-primary-foreground: #0f172a;
-  --color-secondary: #1e293b;
-  --color-secondary-foreground: #7dd3fc;
-  --color-muted: #263449;
-  --color-muted-foreground: #94a3b8;
-  --color-border: #1f2a3a;
-  --color-highlight: #bae6fd;
-  --color-surface: #0b1324;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* Light Mode Theme Overrides */
-.light {
-  --color-background: #f0f7ff;
-  --color-foreground: #0a2540;
-  --color-card: #ffffff;
-  --color-primary: #1d4ed8;
-  --color-primary-foreground: #ffffff;
-  --color-secondary: #dbeafe;
-  --color-secondary-foreground: #1e40af;
-  --color-muted: #eff6ff;
-  --color-muted-foreground: #64748b;
-  --color-border: #bfdbfe;
-  --color-highlight: #93c5fd;
-  --color-surface: #ffffff;
-}
-
-/* Ensure your text-stroke-sharp works in light mode */
-.light .text-stroke-sharp {
-  -webkit-text-stroke: 1px rgba(10, 37, 64, 0.15); /* Darker stroke for light BG */
-}
-
-.light .text-stroke-sharp:hover {
-  -webkit-text-stroke: 1px transparent;
-  color: var(--color-primary);
-}
-
-/* 🧊 Ice Blue + Slate (ultra clean)
---color-background: #0f172a;
---color-foreground: #e2e8f0;
---color-card: #111827;
---color-primary: #38bdf8;
---color-primary-foreground: #0f172a;
---color-secondary: #1e293b;
---color-secondary-foreground: #38bdf8;
---color-muted: #273449;
---color-muted-foreground: #94a3b8;
---color-border: #1f2a3a;
---color-highlight: #7dd3fc;
---color-surface: #0b1220; */
-
-/*🌊 Navy + Cyan + Glass (premium SaaS feel)
---color-background: #0a192f;
---color-foreground: #e6f1ff;
---color-card: #112240;
---color-primary: #64ffda;
---color-primary-foreground: #0a192f;
---color-secondary: #1b2e4b;
---color-secondary-foreground: #64ffda;
---color-muted: #233554;
---color-muted-foreground: #8892b0;
---color-border: #1d2d44;
---color-highlight: #00bcd4;
---color-surface: #0f2744; */
-
-@layer base {
-  html {
-    scroll-behavior: smooth;
-    /* Smooth theme transition for color variables */
-    transition:
-      background-color 0.3s ease,
-      color 0.3s ease,
-      border-color 0.3s ease;
-  }
-
-  body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
-    font-family: "Inter", sans-serif;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  button {
-    cursor: pointer;
-  }
-
-  .font-serif {
-    font-family: "Playfair Display", serif;
-  }
-}
-
-@layer components {
-  .glass {
-    /* Transitions for theme switching */
-    transition:
-      background-color 0.3s ease,
-      border-color 0.3s ease;
-
-    /* Default (Dark Mode) */
-    background-color: rgba(11, 19, 36, 0.5); /* Deep Navy Tint */
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-  }
-
-  /* Specific Light Mode tweak for Glass */
-  .light .glass {
-    background-color: rgba(255, 255, 255, 0.7); /* White Porcelain Tint */
-    border-color: rgba(29, 78, 216, 0.1); /* Subtle Royal Blue border */
-    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05); /* Soft depth instead of glow */
-  }
-
-  .glass-strong {
-    background-color: color-mix(in srgb, var(--color-surface) 80%, transparent);
-    backdrop-filter: blur(24px);
-    border: 1px solid color-mix(in srgb, var(--color-border) 60%, transparent);
-  }
-
-  .glow-text {
-    text-shadow: 0 0 30px
-      color-mix(in srgb, var(--color-primary) 50%, transparent);
-  }
-
-  .glow-border {
-    box-shadow:
-      0 0 20px color-mix(in srgb, var(--color-primary) 20%, transparent),
-      inset 0 0 20px color-mix(in srgb, var(--color-primary) 5%, transparent);
-  }
-}
-
+/* Reusable text shadow used across nearly every white-on-image text element.
+   Replaces the inline style={{ textShadow: '...' }} that was repeated ~30x. */
 @layer utilities {
-  /* --- Keyframes --- */
-  @keyframes fade-in {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-      filter: blur(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-      filter: blur(0);
-    }
+  .pixel-shadow {
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+  }
+  .pixel-shadow-sm {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   }
 
-  @keyframes float {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
+  /* Flickering pixel stars (used in the header). Each star sets its own
+     duration/delay inline so the field twinkles out of sync. */
+  .hdr-star {
+    position: absolute;
+    background: #eaf2ff;
+    pointer-events: none;
+    image-rendering: pixelated;
+    animation: hdrTwinkle 3s ease-in-out infinite;
   }
 
-  @keyframes marquee {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-50%);
-    }
+  /* Hard-edged 8-bit frame drawn from an inline SVG border-image: a solid white
+     outline (2 "blocks" thick) with a single-block notched corner, reading as a
+     rounded pixel border rather than a smooth one. The notched corner needs a
+     border-image — a box-shadow can only cut a full square corner.
+     The white fills the whole ring out to the inner edge, so the dark button
+     fill butts right up against it (no transparent inner gap).
+     `--pixel` is the on-screen size of one border block: the 5x5 tile uses a
+     2-block corner (slice 2), so border-width = 2 * --pixel. Block size and line
+     thickness are decoupled this way — raise --pixel for chunkier pixels while
+     the line stays just 2 blocks thin. `background-clip: padding-box` keeps the
+     dark fill out of the notched corners so the page shows through them.
+     Matches the Minecraft/Pixelify aesthetic; replaces `border border-white
+     rounded-lg` on the footer buttons. */
+  .pixel-border {
+    --pixel: 2px;
+    border-style: solid;
+    border-width: calc(var(--pixel) * 2);
+    border-color: #fff; /* fallback when border-image is unsupported */
+    border-radius: 0;
+    border-image-source: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='5' shape-rendering='crispEdges'%3E%3Cg fill='%23ffffff'%3E%3Crect x='1' y='0' width='3' height='1'/%3E%3Crect x='0' y='1' width='5' height='1'/%3E%3Crect x='0' y='2' width='2' height='1'/%3E%3Crect x='3' y='2' width='2' height='1'/%3E%3Crect x='0' y='3' width='5' height='1'/%3E%3Crect x='1' y='4' width='3' height='1'/%3E%3C/g%3E%3C/svg%3E");
+    border-image-slice: 2;
+    border-image-repeat: stretch;
+    background-clip: padding-box;
+    image-rendering: pixelated;
   }
 
-  @keyframes animated-border {
-    0% {
-      stroke-dashoffset: 400;
-    }
-    100% {
-      stroke-dashoffset: -550;
-    }
+  /* Minecraft-style cobblestone fill: a seamless 16x16 pixel-stone tile (gray
+     blocks with mortar, light top edges, dark bottom edges). The shades sit
+     close to the base gray so the texture reads as soft/faded stone. */
+  .rock-surface {
+    background-color: #626262;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' shape-rendering='crispEdges'%3E%3Crect width='16' height='16' fill='%23626262'/%3E%3Crect x='0' y='0' width='16' height='1' fill='%23525252'/%3E%3Crect x='0' y='8' width='16' height='1' fill='%23525252'/%3E%3Crect x='0' y='1' width='1' height='7' fill='%23525252'/%3E%3Crect x='8' y='1' width='1' height='7' fill='%23525252'/%3E%3Crect x='4' y='9' width='1' height='7' fill='%23525252'/%3E%3Crect x='12' y='9' width='1' height='7' fill='%23525252'/%3E%3Crect x='1' y='1' width='7' height='1' fill='%236e6e6e'/%3E%3Crect x='9' y='1' width='7' height='1' fill='%236e6e6e'/%3E%3Crect x='1' y='7' width='7' height='1' fill='%23585858'/%3E%3Crect x='9' y='7' width='7' height='1' fill='%23585858'/%3E%3Crect x='5' y='9' width='7' height='1' fill='%236e6e6e'/%3E%3Crect x='13' y='9' width='3' height='1' fill='%236e6e6e'/%3E%3Crect x='0' y='9' width='4' height='1' fill='%236e6e6e'/%3E%3Crect x='5' y='15' width='7' height='1' fill='%23585858'/%3E%3Crect x='13' y='15' width='3' height='1' fill='%23585858'/%3E%3Crect x='0' y='15' width='4' height='1' fill='%23585858'/%3E%3C/svg%3E");
+    background-size: 32px 32px;
+    background-repeat: repeat;
+    image-rendering: pixelated;
+    /* Raised stone-block bevel: light top/left, dark bottom/right edges for a 3D
+       feel, plus a crisp dark outline + soft drop so the blocks read distinctly
+       against the dirt/grass background. */
+    border-style: solid;
+    border-width: 3px;
+    border-color: #8c8c8c #2c2c2c #2c2c2c #8c8c8c; /* top right bottom left */
+    box-shadow: 0 0 0 1px #161616, 0 4px 10px rgba(0, 0, 0, 0.5);
   }
+}
 
-  /* --- Animation Utilities --- */
-  .animate-fade-in {
-    animation: fade-in 0.8s ease-out both;
-  }
+@keyframes hdrTwinkle {
+  0%, 100% { opacity: 0.18; }
+  20%      { opacity: 1; }
+  45%      { opacity: 0.35; }
+  70%      { opacity: 0.85; }
+}
 
-  .animate-float {
-    animation: float 4s ease-in-out infinite;
-  }
+:root {
+  --black-gradient: linear-gradient(
+    144.39deg,
+    #ffffff -278.56%,
+    #6d6d6d -78.47%,
+    #11101d 91.61%
+  );
+  --card-shadow: 0px 20px 100px -10px rgba(66, 71, 91, 0.1);
+}
 
-  .animate-marquee-slow {
-    animation: marquee 40s linear infinite;
-  }
+* {
+  scroll-behavior: smooth;
+}
 
-  /* --- Skill Marquee Effect --- */
-  .text-stroke-sharp {
-    -webkit-text-stroke: 1px rgba(241, 245, 249, 0.15);
-    color: transparent;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    cursor: default;
-  }
+.text-gradient {
+  background: radial-gradient(
+    64.18% 64.18% at 71.16% 35.69%,
+    #def9fa 0.89%,
+    #bef3f5 17.23%,
+    #9dedf0 42.04%,
+    #7de7eb 55.12%,
+    #5ce1e6 71.54%,
+    #33bbcf 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}
 
-  .text-stroke-sharp:hover {
-    -webkit-text-stroke: 1px transparent;
-    color: var(--color-primary);
-  }
+.text-nonclickblue {
+  color: #72e1e7;
+}
 
-  /* --- Specialized Components --- */
-  .group:hover .animated-border-path {
-    animation: animated-border 1.5s linear infinite;
-  }
 
-  .timeline-glow {
-    box-shadow:
-      0 0 40px color-mix(in srgb, var(--color-primary) 35%, transparent),
-      0 0 80px color-mix(in srgb, var(--color-primary) 25%, transparent);
-  }
 
-  /* --- Animation Delays --- */
-  .animation-delay-100 {
-    animation-delay: 100ms;
+
+.bg-blue-gradient {
+  background: linear-gradient(
+    157.81deg,
+    #def9fa -43.27%,
+    #bef3f5 -21.24%,
+    #9dedf0 12.19%,
+    #7de7eb 29.82%,
+    #5ce1e6 51.94%,
+    #33bbcf 90.29%
+  );
+}
+
+.bg-darkblue-gradient {
+  background: linear-gradient(
+    157.81deg,
+    #a0d3d9 -43.27%, /* Darker shade of the first color */
+    #8ac8cc -21.24%, /* Darker shade of the second color */
+    #6db9c4 12.19%,  /* Darker shade of the third color */
+    #4ab4bc 29.82%,  /* Darker shade of the fourth color */
+    #2d9aaf 51.94%,  /* Darker shade of the fifth color */
+    #1a7f8e 90.29%   /* Darker shade of the sixth color */
+  );
+}
+
+.bg-lightblue-gradient {
+  background: linear-gradient(
+    157.81deg,
+    #def9fa -43.27%,
+    #def9fa -21.24%,
+    #bef3f5 12.19%,
+    #bef3f5 29.82%,
+    #9dedf0 51.94%,
+    #9dedf0 90.29%
+  );
+}
+
+
+.bg-button-blue {
+  background-color: #006cb4;
+}
+
+
+
+.bg-black-gradient {
+  background: linear-gradient(
+    144.39deg,
+    #ffffff -278.56%,
+    #6d6d6d -78.47%,
+    #11101d 91.61%
+  );
+}
+
+.bg-black-gradient-2 {
+  background: linear-gradient(
+    -168.39deg,
+    #ffffff -278.56%,
+    #6d6d6d -78.47%,
+    #11101d 91.61%
+  );
+}
+
+.bg-gray-gradient {
+  background: linear-gradient(
+    153.47deg,
+    rgba(255, 255, 255, 0) -341.94%,
+    #14101d 95.11%
+  );
+}
+
+.bg-discount-gradient {
+  background: linear-gradient(125.17deg, #272727 0%, #11101d 100%);
+}
+
+.box-shadow {
+  box-shadow: 0px 20px 100px -10px rgba(66, 71, 91, 0.1);
+}
+
+.sidebar {
+  -webkit-animation: slide-top 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  animation: slide-top 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+@-webkit-keyframes slide-top {
+  0% {
+    -webkit-transform: translateY(100px);
+    transform: translateY(100px);
   }
-  .animation-delay-200 {
-    animation-delay: 200ms;
+  100% {
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
   }
-  .animation-delay-300 {
-    animation-delay: 300ms;
+}
+
+@keyframes slide-top {
+  0% {
+    -webkit-transform: translateY(100px);
+    transform: translateY(100px);
   }
-  .animation-delay-400 {
-    animation-delay: 400ms;
+  100% {
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
   }
-  .animation-delay-500 {
-    animation-delay: 500ms;
-  }
-  .animation-delay-600 {
-    animation-delay: 600ms;
-  }
-  .animation-delay-800 {
-    animation-delay: 800ms;
-  }
+}
+
+.feature-card:hover {
+  background: var(--black-gradient);
+  box-shadow: var(--card-shadow);
+}
+
+/* "Spotlight" hover for the home career timeline: hovering one role keeps it lit
+   while the others fade back and desaturate, pulling focus to the active role.
+   With nothing hovered, every row renders normally. */
+.career-spotlight .career-row {
+  transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
+}
+.career-spotlight:has(.career-row:hover) .career-row:not(:hover) {
+  opacity: 0.35;
+  filter: grayscale(0.75);
+}
+
+.feedback-container .feedback-card:last-child {
+  margin-right: 0px;
+}
+
+.feedback-card {
+  background: transparent;
+}
+
+.feedback-card:hover {
+  background: var(--black-gradient);
+}
+
+.blue__gradient {
+  background: linear-gradient(180deg, rgba(188, 165, 255, 0) 0%, #214d76 100%);
+  filter: blur(123px);
+}
+
+.pink__gradient {
+  background: linear-gradient(90deg, #f4c4f3 0%, #fc67fa 100%);
+  filter: blur(900px);
+}
+
+.white__gradient {
+  background: rgba(255, 255, 255, 0.6);
+  filter: blur(750px);
+}
+
+/* Add this style to your existing CSS or create a new CSS file */
+.rounded-box {
+  background-color: #2196F3;
+  display: inline-block;
+  border-radius: 10px; /* Adjust the radius as needed */
+  overflow: hidden;
+  cursor: pointer;
+}
+
+/* Add hover effect if desired */
+.rounded-box:hover {
+  background-color: #e0e0e0; /* Change the color on hover */
+}
+
+.post-footer-wrapper {
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  background-color: var(--color-primary); /* or your background color */
+}
+
+html {
+  scroll-behavior: smooth;
+  /* The page never scrolls sideways. Clip any incidental horizontal overflow
+     (e.g. an edge hover tooltip or the parallax layer) so no horizontal
+     scrollbar appears. `clip` (not `hidden`) avoids turning the root into a
+     scroll container, so window scrolling / scrollY stay intact. */
+  overflow-x: clip;
+}
+
+/* Ensure the footer stays at the bottom of the viewport */
+footer {
+  z-index: 10; /* Ensures footer is on top */
+}
+
+/* Optionally, add some styling for when PostFooterHome should be visible */
+.post-footer-wrapper {
+  transition: opacity 0.3s ease;
+}
+
+/* styles.css or equivalent */
+
+.homepage-link {
+  color: #ffcc00; /* Example color, adjust as needed */
+  text-decoration: none;
+}
+
+.homepage-link:hover {
+  color: #ff9900; /* Example hover color, adjust as needed */
+}
+
+/* Custom Scrollbar Styles */
+
+/* For Firefox */
+html {
+  scrollbar-width: auto; /* Thin scrollbar */
+  scrollbar-color: #5fbfff ; /* Thumb and track color */
+}
+
+/* For Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 12px; /* Width of the scrollbar */
+  
+}
+
+::-webkit-scrollbar-track {
+  background:  #08040c; /* Track color */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4387b5; /* Thumb color */
+  border: 3px solid #08040c; /* Simulate a border by adding a border to the thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #5fbfff; /* Thumb color on hover */
+}
+
+/*
+Logo cycling
+*/
+
+.carousel {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.inner-carousel {
+  display: flex;
+  width: 100%;
+}
+
+.carousel-item {
+  flex: 0 0 auto;
+  width: 5%; /* Adjust this value based on the number of items visible */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px; /* Space between items */
+}
+
+.carousel-item img {
+  max-width: 45px; /* Adjust size as needed */
+  max-height: 45px; /* Adjust size as needed */
+}
+
+/*
+Hover for home expereinces
+*/
+
+.bg-gradient-hover {
+  color: linear-gradient(
+    157.81deg,
+    #def9fa -43.27%,
+    #bef3f5 -21.24%,
+    #9dedf0 12.19%,
+    #7de7eb 29.82%,
+    #5ce1e6 51.94%,
+    #33bbcf 90.29%
+  );
+}
+
+/*
+Pixel boxes
+*/
+
+/* ============================================================
+   MOBILE PAUSE MENU  (full-screen arcade nav, < 768px)
+   Rendered by Navbar.jsx through framer-motion (backdrop fade +
+   staggered rows). Layout/animation is JS; this is the static
+   pixel skin. Palette mirrors the site theme (cyan #5ce1e6 /
+   teal #33bbcf / panel #1b1934 / edge #3a2f6b). Hardcoded here
+   because design.css's :root vars are not loaded.
+   ============================================================ */
+.pause-menu {
+  background: rgba(8, 4, 12, 0.9);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  padding: 24px;
+}
+/* Safety: the overlay is portaled to <body>, so width-gate it in CSS too —
+   it must never appear at desktop widths regardless of toggle state. */
+@media (min-width: 768px) {
+  .pause-menu { display: none !important; }
+}
+
+/* Close control (the overlay covers the navbar's hamburger). */
+.pause-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  font-family: 'Pixelify Sans', system-ui, sans-serif;
+  font-size: 22px;
+  line-height: 1;
+  color: #7de7eb;
+  background: #1b1934;
+  border: 3px solid #3a2f6b;
+  box-shadow: 0 0 0 3px #08040c;
+  cursor: pointer;
+  transition: color 0.12s, border-color 0.12s;
+}
+.pause-close:hover {
+  color: #fff;
+  border-color: #33bbcf;
+}
+
+/* CRT scanlines + edge vignette over the dimmed scene (non-interactive). */
+.pause-scanlines {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0.22) 3px,
+    rgba(0, 0, 0, 0) 4px
+  );
+  opacity: 0.5;
+}
+.pause-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(120% 100% at 50% 50%, transparent 55%, rgba(5, 3, 10, 0.85) 100%);
+}
+
+.pause-panel {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  font-family: 'Pixelify Sans', system-ui, sans-serif;
+}
+
+.pause-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 3px solid #2a2552;
+  font-size: 30px;
+  letter-spacing: 3px;
+  color: #7de7eb;
+  text-shadow: 0 3px 0 #1a1233;
+}
+.pause-led {
+  width: 11px;
+  height: 11px;
+  flex: none;
+  background: #5ce1e6;
+  box-shadow: 0 0 10px #5ce1e6;
+  animation: pauseBlink 1.4s steps(2) infinite;
+}
+@keyframes pauseBlink {
+  50% { opacity: 0.2; }
+}
+
+/* Big thumb-sized rows (60px tall). */
+.pause-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 60px;
+  padding: 0 18px;
+  font-family: 'Pixelify Sans', system-ui, sans-serif;
+  font-size: 24px;
+  letter-spacing: 1px;
+  text-align: left;
+  color: #a59ed6;
+  background: #1b1934;
+  border: 3px solid #3a2f6b;
+  box-shadow: 0 0 0 3px #08040c, 0 6px 0 #100e22;
+  cursor: pointer;
+  transition: color 0.12s, border-color 0.12s, background 0.12s, transform 0.06s;
+}
+.pause-row:hover {
+  color: #7de7eb;
+  border-color: #33bbcf;
+  background: #221f42;
+}
+.pause-row:active {
+  transform: translateY(3px);
+  box-shadow: 0 0 0 3px #08040c, 0 3px 0 #100e22;
+}
+.pause-row.is-active {
+  color: #fff;
+  border-color: #33bbcf;
+  background: #221f42;
+}
+.pause-row-cursor {
+  width: 18px;
+  flex: none;
+  font-size: 22px;
+  line-height: 1;
+  color: #5ce1e6;
+}
+.pause-row-label {
+  flex: 1;
+}
+.pause-row-chevron {
+  font-size: 20px;
+  color: #4a4378;
+}
+.pause-row:hover .pause-row-chevron,
+.pause-row.is-active .pause-row-chevron {
+  color: #5ce1e6;
+}
+
+.pause-foot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+  padding-top: 16px;
+  border-top: 3px solid #2a2552;
+}
+.pause-jacks {
+  display: flex;
+  gap: 10px;
+}
+.pause-jack {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 40%, #2a2750, #100e22);
+  border: 3px solid #4a3f72;
+  box-shadow: 0 0 0 3px #08040c;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.pause-jack:hover {
+  border-color: #5ce1e6;
+  box-shadow: 0 0 0 3px #08040c, 0 0 12px rgba(92, 225, 230, 0.5);
+}
+.pause-jack img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  image-rendering: auto;
+}
+/* The resume jack uses an inline stroke SVG instead of a logo image. */
+.pause-jack svg {
+  width: 22px;
+  height: 22px;
+  color: #bcd0f5;
+  image-rendering: auto;
+  transition: color 0.15s;
+}
+.pause-jack:hover svg {
+  color: #7de7eb;
 }
