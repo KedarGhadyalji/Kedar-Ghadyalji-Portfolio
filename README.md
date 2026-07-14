@@ -1,34 +1,53 @@
-# Kedar Ghadyalji | Software Engineer
+# Karsten's Website
 
-**Building intelligent, full-stack solutions with precision.**
+Link: https://karsten-uy.github.io/karsten_website/
 
-[![Portfolio](https://img.shields.io/badge/Portfolio-Live-7dd3fc?style=for-the-badge)](#)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/kedar-ghadyalji-98b7a6341)
+Welcome to my website! This project showcases my portfolio, projects, and more.
 
-## ⚙️ Local Development
+## Built With
 
-Follow these steps to get the project running locally:
+- **Vite** – fast dev server and bundler.
+- **React** – UI library.
+- **Framer Motion** – animation library for React.
+- **EmailJS** – send emails from the contact form.
+- **TailwindCSS** – utility-first CSS framework.
 
-### 1. Clone the repository
+## Run locally
 
-git clone https://github.com/KedarGhadyalji/Kedar-Ghadyalji-Portfolio.git
-cd Kedar-Ghadyalji-Portfolio
-
-### 2. Install dependencies
-
+```bash
 npm install
-
-### 3. Configure Environment Variables
-
-Create a .env file in the root directory and add your credentials:
-VITE_DISCORD_WEBHOOK_URL=your_discord_webhook_url
-
-### 4. Run the development server
-
 npm run dev
+```
 
----
+See [documentation/run.md](documentation/run.md) for all scripts.
 
-<p align="center">
-  <b>© 2026 • Works on my machine • Shipping is someone else's problem — KG.</b>
-</p>
+## Project structure
+
+```
+src/
+  data/         <- single source of truth for content (edit these)
+    projects.js     all projects + per-view flags
+    experience.js   the career list
+    siteConfig.js   nav links, social links, hero titles, per-page backgrounds
+  components/   reusable UI (Navbar, Footer, ProjectCard, ...)
+  pages/        one file per route (Home, About, Experience, Projects, Contact, 404)
+  assets/       images, video, audio
+```
+
+### Adding a project
+
+Add **one object** to the `projects` array in [src/data/projects.js](src/data/projects.js)
+and set where it appears with the flags `showOnExperience`, `showOnProjects`, and `featured`.
+The Experience page, the Projects page cards, and the home highlights all read from this one list.
+
+### Adding a page
+
+Add a `<Route>` in [src/App.jsx](src/App.jsx) and one entry to `pageConfig` in
+[src/data/siteConfig.js](src/data/siteConfig.js) (background + overlay). Add it to `navLinks`
+in the same file to show it in the navbar.
+
+## Deployment
+
+Pushing to `main` builds and deploys automatically via GitHub Actions.
+See [documentation/deployment.md](documentation/deployment.md) (includes the one-time
+Pages setting and how to switch to a custom domain).
