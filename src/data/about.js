@@ -13,7 +13,7 @@ import {
   FiCheckCircle,
   FiMapPin,
 } from "react-icons/fi";
-import Kedar from "/KKG.jpeg";
+import Kedar from "/Kedar.png";
 import { companyLogos } from "./companyLogos";
 
 export const aboutPage = {

@@ -10,7 +10,7 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { aboutIntro, whatIDo } from "../../data/home";
-import Kedar from "/KKG.jpeg";
+import Kedar from "/Kedar.png";
 // discipline: icon tile + title + description.
 const AboutCapabilities = () => (
   <>
