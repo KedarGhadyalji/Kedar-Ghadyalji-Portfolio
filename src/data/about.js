@@ -49,7 +49,7 @@ export const aboutPage = {
     heading: "At a glance",
     stats: [
       { value: "225+", label: "LeetCode Solved" },
-      { value: "625+", label: "GitHub Commits" },
+      { value: "675+", label: "GitHub Commits" },
       { value: "1", label: "VS Code Extension" },
       { value: "ML", label: "Data Automation" },
     ],
