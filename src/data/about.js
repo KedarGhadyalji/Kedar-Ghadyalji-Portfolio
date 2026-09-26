@@ -51,7 +51,7 @@ export const aboutPage = {
       { value: "225+", label: "LeetCode Solved" },
       { value: "700+", label: "GitHub Commits" },
       { value: "1", label: "VS Code Extension" },
-      { value: "ML", label: "Data Automation" },
+      { value: "2", label: "Python Packages" },
     ],
     workedWithHeading: "Experience & Platforms",
     logos: [
